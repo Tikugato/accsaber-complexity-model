@@ -18,7 +18,7 @@ docker build -t accsaber-complexity-model .
 docker run -p 8000:8000 accsaber-complexity-model
 ```
 
-`GET /health` answers with the model name and a short hash of the model file. `POST /note-accuracies` takes a multipart body with the map zip as `zip`, the difficulty as `difficulty`, either a name from `Easy` to `ExpertPlus` or one of the numbers 1 to 9, and the characteristic as `characteristic`, `Standard` unless you say otherwise. You get back the per-note accuracies in map order, their times in seconds, the note count, the model name and the same hash. The backend stores those next to every number it produces.
+`GET /health` answers with the model name and a short hash of the model file. `POST /note-accuracies` takes a multipart body with the map zip as `zip`, the difficulty as `difficulty`, either a name from `Easy` to `ExpertPlus` or one of the numbers 1 to 9, and the characteristic as `characteristic`, `Standard` unless you say otherwise. You get back the per-note accuracies in map order, their times in seconds, the note count, the model name and the same hash, plus two swing shares the backend prices reset maps with: `resetShare`, the share of consecutive same colour notes where the second swing repeats the direction of the first, a dot note counting as a repeat, and `dotShare`, the share of notes that are dots. The backend stores all of it next to every number it produces.
 
 To try one map without the server:
 
@@ -35,11 +35,13 @@ uv run python scripts/predict.py path/to/map.zip ExpertPlus
 | `complexity_model/timescale.py` | Beats to seconds with BPM changes, the same way the BeatLeader parser does it. |
 | `complexity_model/vnjs.py` | Variable NJS. Interpolates between NJS events with the game's easing curves, and a note gets the NJS it spawns with. |
 | `complexity_model/encoding.py` | Turns each note into the 49 numbers the network reads, orders the notes the way BeatLeader orders them, and cuts the map into the 32-note windows the network predicts from. |
+| `complexity_model/patterns.py` | Counts the swing shares. The network prices every note as a real swing, so a map of downs and dots looks like any other slow map to it. The reset share is what tells the two apart. |
 | `complexity_model/model.py` | Loads the ONNX file with onnxruntime, runs the windows through it and lines the predictions back up with the notes. Also computes the model hash `/health` reports. |
 | `models/` | The pinned weights and their licence. `COMPLEXITY_MODEL_FILE` picks which file in here the service loads. |
 | `scripts/predict.py` | Runs one local map through the model and prints the result as JSON. |
+| `scripts/reset_features.py` | Writes the swing shares of every cached ranked map to a CSV for fitting the true acc line. |
 | `scripts/validate_against_stage.py` | Downloads every map in a folder of cached BeatLeader stage responses, runs it through this code and compares each predicted note against theirs. |
-| `tests/` | Unit tests for the encoding, the windowing, the timescale and the NJS interpolation. |
+| `tests/` | Unit tests for the encoding, the windowing, the timescale, the NJS interpolation and the swing shares. |
 | `training/` | Reserved for our own model. Empty apart from the note on what the service expects back. |
 | `Dockerfile` | The image staging and prod run, built with uv on `python:3.12-slim`. |
 | `.github/workflows/build-image.yml` | Tests, builds and publishes the image, then redeploys the backend stack that uses it. |

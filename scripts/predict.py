@@ -6,12 +6,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from complexity_model.beatmap import load_difficulty
 from complexity_model.model import NoteAccuracyModel
+from complexity_model.patterns import swing_shares
 
 
 def main(zip_path: str, difficulty: str, characteristic: str) -> int:
     parsed = load_difficulty(Path(zip_path).read_bytes(), characteristic, difficulty)
     model = NoteAccuracyModel()
     prediction = model.predict(parsed)
+    shares = swing_shares(parsed.notes)
     print(json.dumps({
         "model": model.name,
         "modelHash": model.fingerprint,
@@ -21,6 +23,8 @@ def main(zip_path: str, difficulty: str, characteristic: str) -> int:
         "meanAccuracy": prediction.mean_accuracy,
         "noteAccuracies": prediction.accuracies,
         "noteTimes": prediction.times,
+        "resetShare": shares.reset_share,
+        "dotShare": shares.dot_share,
     }, indent=2))
     return 0
 

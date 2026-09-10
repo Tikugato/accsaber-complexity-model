@@ -4,6 +4,7 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 
 from complexity_model.beatmap import BeatmapError, load_difficulty
 from complexity_model.model import NoteAccuracyModel
+from complexity_model.patterns import swing_shares
 
 app = FastAPI(title="AccSaber Complexity Model")
 log = logging.getLogger("uvicorn.error")
@@ -31,6 +32,7 @@ async def note_accuracies(
         raise HTTPException(status_code=500, detail=f"parse error: {exc}")
 
     prediction = model.predict(parsed)
+    shares = swing_shares(parsed.notes)
     return {
         "model": model.name,
         "modelHash": model.fingerprint,
@@ -42,4 +44,6 @@ async def note_accuracies(
         "meanAccuracy": prediction.mean_accuracy,
         "noteAccuracies": prediction.accuracies,
         "noteTimes": prediction.times,
+        "resetShare": shares.reset_share,
+        "dotShare": shares.dot_share,
     }
