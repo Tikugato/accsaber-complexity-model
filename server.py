@@ -37,6 +37,7 @@ async def note_accuracies(
         "model": model.name,
         "modelHash": model.fingerprint,
         "mapVersion": parsed.version,
+        "njs": parsed.njs,
         "characteristic": parsed.characteristic,
         "difficulty": parsed.difficulty,
         "notes": prediction.notes,

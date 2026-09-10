@@ -18,7 +18,7 @@ docker build -t accsaber-complexity-model .
 docker run -p 8000:8000 accsaber-complexity-model
 ```
 
-`GET /health` answers with the model name and a short hash of the model file. `POST /note-accuracies` takes a multipart body with the map zip as `zip`, the difficulty as `difficulty`, either a name from `Easy` to `ExpertPlus` or one of the numbers 1 to 9, and the characteristic as `characteristic`, `Standard` unless you say otherwise. You get back the per-note accuracies in map order, their times in seconds, the note count, the model name and the same hash, plus two swing shares the backend prices reset maps with: `resetShare`, the share of consecutive same colour notes where the second swing repeats the direction of the first, a dot note counting as a repeat, and `dotShare`, the share of notes that are dots. The backend stores all of it next to every number it produces.
+`GET /health` answers with the model name and a short hash of the model file. `POST /note-accuracies` takes a multipart body with the map zip as `zip`, the difficulty as `difficulty`, either a name from `Easy` to `ExpertPlus` or one of the numbers 1 to 9, and the characteristic as `characteristic`, `Standard` unless you say otherwise. You get back the per-note accuracies in map order, their times in seconds, the note count, the map's base NJS, the model name and the same hash, plus two swing shares the backend prices reset maps with: `resetShare`, the share of consecutive same colour notes where the second swing repeats the direction of the first, a dot note counting as a repeat, and `dotShare`, the share of notes that are dots. The backend stores all of it next to every number it produces.
 
 To try one map without the server:
 

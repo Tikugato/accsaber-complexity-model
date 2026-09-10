@@ -18,6 +18,7 @@ def main(zip_path: str, difficulty: str, characteristic: str) -> int:
         "model": model.name,
         "modelHash": model.fingerprint,
         "mapVersion": parsed.version,
+        "njs": parsed.njs,
         "notes": prediction.notes,
         "predictedNotes": len(prediction.accuracies),
         "meanAccuracy": prediction.mean_accuracy,
