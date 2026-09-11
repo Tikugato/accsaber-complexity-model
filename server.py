@@ -47,5 +47,5 @@ async def note_accuracies(
         "noteTimes": prediction.times,
         "resetShare": shares.reset_share,
         "dotShare": shares.dot_share,
-        "outerUpShare": shares.outer_up_share,
+        "bottomUpShare": shares.bottom_up_share,
     }

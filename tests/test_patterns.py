@@ -28,7 +28,7 @@ def test_diagonals_count_by_direction_and_stacks_are_skipped():
     assert shares.reset_share == 1 / 3
 
 
-def test_outer_lane_bottom_row_up_swings_are_counted():
+def test_bottom_row_up_swings_are_counted():
     notes = [
         note(0.0, 0, 0, x=0, y=0),
         note(0.5, 0, 4, x=3, y=0),
@@ -38,15 +38,15 @@ def test_outer_lane_bottom_row_up_swings_are_counted():
         note(2.5, 0, 1, x=0, y=0),
     ]
     shares = swing_shares(notes)
-    assert shares.outer_up_share == 3 / 6
+    assert shares.bottom_up_share == 4 / 6
 
 
-def test_maps_without_the_pattern_report_zero():
-    notes = [note(0.0, 0, 1), note(0.5, 0, 0), note(1.0, 0, 1)]
-    assert swing_shares(notes).outer_up_share == 0.0
+def test_up_swings_above_the_bottom_row_do_not_count():
+    notes = [note(0.0, 0, 1, y=0), note(0.5, 0, 0, y=1), note(1.0, 0, 4, y=2)]
+    assert swing_shares(notes).bottom_up_share == 0.0
 
 
 def test_empty_map():
     shares = swing_shares([])
     assert shares.reset_share == 0.0 and shares.dot_share == 0.0 and shares.pairs == 0
-    assert shares.outer_up_share == 0.0
+    assert shares.bottom_up_share == 0.0
