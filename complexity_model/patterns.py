@@ -5,12 +5,16 @@ from complexity_model.beatmap import Note
 DOT = 8
 VECTORS = {0: (0, 1), 1: (0, -1), 2: (-1, 0), 3: (1, 0), 4: (-1, 1), 5: (1, 1), 6: (-1, -1), 7: (1, -1)}
 SAME_TIME = 1e-3
+UPWARD = {0, 4, 5}
+OUTER_LANES = (0, 3)
+BOTTOM_ROW = 0
 
 
 @dataclass(frozen=True)
 class SwingShares:
     reset_share: float
     dot_share: float
+    outer_up_share: float
     pairs: int
 
 
@@ -21,8 +25,14 @@ def swing_shares(notes: list[Note]) -> SwingShares:
             by_color[note.color].append(note)
     total = sum(len(v) for v in by_color.values())
     if total == 0:
-        return SwingShares(0.0, 0.0, 0)
+        return SwingShares(0.0, 0.0, 0.0, 0)
     dots = sum(1 for v in by_color.values() for n in v if n.direction == DOT)
+    outer_ups = sum(
+        1
+        for v in by_color.values()
+        for n in v
+        if n.x in OUTER_LANES and n.y == BOTTOM_ROW and n.direction in UPWARD
+    )
     pairs = 0
     resets = 0
     for hand in by_color.values():
@@ -33,7 +43,7 @@ def swing_shares(notes: list[Note]) -> SwingShares:
             pairs += 1
             if a.direction == DOT or b.direction == DOT or _dot(a.direction, b.direction) > 0:
                 resets += 1
-    return SwingShares(resets / pairs if pairs else 0.0, dots / total, pairs)
+    return SwingShares(resets / pairs if pairs else 0.0, dots / total, outer_ups / total, pairs)
 
 
 def _dot(first: int, second: int) -> int:

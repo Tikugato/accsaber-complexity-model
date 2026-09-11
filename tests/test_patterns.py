@@ -2,8 +2,8 @@ from complexity_model.beatmap import Note
 from complexity_model.patterns import swing_shares
 
 
-def note(seconds, color=0, direction=1):
-    return Note(seconds, 1, 0, color, direction, 0, 10.0)
+def note(seconds, color=0, direction=1, x=1, y=0):
+    return Note(seconds, x, y, color, direction, 0, 10.0)
 
 
 def test_alternating_down_and_dot_is_all_resets():
@@ -28,6 +28,25 @@ def test_diagonals_count_by_direction_and_stacks_are_skipped():
     assert shares.reset_share == 1 / 3
 
 
+def test_outer_lane_bottom_row_up_swings_are_counted():
+    notes = [
+        note(0.0, 0, 0, x=0, y=0),
+        note(0.5, 0, 4, x=3, y=0),
+        note(1.0, 0, 5, x=0, y=0),
+        note(1.5, 0, 0, x=1, y=0),
+        note(2.0, 0, 0, x=0, y=1),
+        note(2.5, 0, 1, x=0, y=0),
+    ]
+    shares = swing_shares(notes)
+    assert shares.outer_up_share == 3 / 6
+
+
+def test_maps_without_the_pattern_report_zero():
+    notes = [note(0.0, 0, 1), note(0.5, 0, 0), note(1.0, 0, 1)]
+    assert swing_shares(notes).outer_up_share == 0.0
+
+
 def test_empty_map():
     shares = swing_shares([])
     assert shares.reset_share == 0.0 and shares.dot_share == 0.0 and shares.pairs == 0
+    assert shares.outer_up_share == 0.0
