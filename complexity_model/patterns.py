@@ -6,10 +6,12 @@ DOT = 8
 VECTORS = {0: (0, 1), 1: (0, -1), 2: (-1, 0), 3: (1, 0), 4: (-1, 1), 5: (1, 1), 6: (-1, -1), 7: (1, -1)}
 SAME_TIME = 1e-3
 UPWARD = {0, 4, 5}
+DOWNWARD = {1, 6, 7}
 UP_DIAGONAL = {4, 5}
 DOWN_DIAGONAL = {6, 7}
 BOTTOM_ROW = 0
 MIDDLE_ROW = 1
+TOP_ROW = 2
 
 
 @dataclass(frozen=True)
@@ -17,6 +19,7 @@ class SwingShares:
     reset_share: float
     dot_share: float
     bottom_up_share: float
+    top_down_share: float
     mid_diag_double_share: float
     pairs: int
 
@@ -28,11 +31,12 @@ def swing_shares(notes: list[Note]) -> SwingShares:
             by_color[note.color].append(note)
     total = sum(len(v) for v in by_color.values())
     if total == 0:
-        return SwingShares(0.0, 0.0, 0.0, 0.0, 0)
+        return SwingShares(0.0, 0.0, 0.0, 0.0, 0.0, 0)
     dots = sum(1 for v in by_color.values() for n in v if n.direction == DOT)
     bottom_ups = sum(
         1 for v in by_color.values() for n in v if n.y == BOTTOM_ROW and n.direction in UPWARD
     )
+    top_downs = sum(1 for v in by_color.values() for n in v if n.y == TOP_ROW and n.direction in DOWNWARD)
     pairs = 0
     resets = 0
     for hand in by_color.values():
@@ -44,7 +48,8 @@ def swing_shares(notes: list[Note]) -> SwingShares:
             if a.direction == DOT or b.direction == DOT or _dot(a.direction, b.direction) > 0:
                 resets += 1
     return SwingShares(
-        resets / pairs if pairs else 0.0, dots / total, bottom_ups / total, _mid_diag_doubles(by_color) / total, pairs
+        resets / pairs if pairs else 0.0, dots / total, bottom_ups / total, top_downs / total,
+        _mid_diag_doubles(by_color) / total, pairs
     )
 
 

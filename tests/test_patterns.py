@@ -46,6 +46,11 @@ def test_up_swings_above_the_bottom_row_do_not_count():
     assert swing_shares(notes).bottom_up_share == 0.0
 
 
+def test_top_row_down_swings_are_counted():
+    notes = [note(0.0, 0, 1, x=0, y=2), note(0.5, 0, 6, x=3, y=2), note(1.0, 0, 7, x=1, y=2), note(1.5, 0, 0, x=0, y=2), note(2.0, 0, 1, x=0, y=0)]
+    assert swing_shares(notes).top_down_share == 3 / 5
+
+
 def test_mid_row_opposite_diagonal_doubles_are_counted():
     notes = [
         note(0.0, 0, 4, x=1, y=1), note(0.0, 1, 7, x=2, y=1),
@@ -63,3 +68,4 @@ def test_empty_map():
     assert shares.reset_share == 0.0 and shares.dot_share == 0.0 and shares.pairs == 0
     assert shares.bottom_up_share == 0.0
     assert shares.mid_diag_double_share == 0.0
+    assert shares.top_down_share == 0.0

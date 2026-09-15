@@ -48,5 +48,6 @@ async def note_accuracies(
         "resetShare": shares.reset_share,
         "dotShare": shares.dot_share,
         "bottomUpShare": shares.bottom_up_share,
+        "topDownShare": shares.top_down_share,
         "midDiagDoubleShare": shares.mid_diag_double_share,
     }
